@@ -40,9 +40,8 @@ def send_encrypted_file_to(sock: socket.socket, mode, K):
             encrypted_message = encrypt_message_with_mode(mode, file_text, K)
             
             file_size = len(encrypted_message)
-            
-            sock.sendall(str(file_size).encode())
-            time.sleep(1/1000)
+
+            sock.sendall(file_size.to_bytes(4, 'big'))
             print("Mesajul encriptat: {}".format(encrypted_message))
             sock.sendall(encrypted_message)
     except FileNotFoundError:

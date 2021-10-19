@@ -25,7 +25,7 @@ def get_decrypted_key(K_encrypted):
     
 def get_file_message(conn: socket.socket):
     size = conn.recv(4)
-    size = int(size.decode(errors="ignore"))
+    size = int.from_bytes(size, 'big')
     message = conn.recv(size)
     return message
 
@@ -61,7 +61,6 @@ def start_server():
         s.listen()
         conn, _ = s.accept()
         handle_connection(conn)
-        
             
 if __name__ == "__main__":
     start_server()
