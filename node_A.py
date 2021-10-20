@@ -12,7 +12,7 @@ def encrypt_message_with_mode(mode, message, K):
         mode_class = Mode_ECB(K)
     elif mode == OFB:
         mode_class = Mode_OFB(K, IV)
-    print("Mesajul care trebuie encriptat: {}\n".format(message))
+    print(f"Mesajul care trebuie encriptat: {message}\n")
     print(f"Modul folosit pentru encriptarea mesajului: {mode_class.ID}\n")
     encrypted_msg = mode_class.encrypt(message)
     return encrypted_msg
@@ -21,13 +21,16 @@ def encrypt_message_with_mode(mode, message, K):
 def request_from_key_manager(mode):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as kms:
         kms.connect((HOST, PORT_KM))
+        # se conecteaza la key manager si ii trimite modul de operatie
         kms.sendall(mode.encode())
         
+        # preia cheia encriptata de la key manager
         K_encrypted = kms.recv(16)
-        print("Cheia primita de la nodul KM: {}\n".format(K_encrypted))
+        print(f"Cheia primita de la nodul KM: {K_encrypted}\n")
         
+        #decripteaza cheia
         K = decrypt_128bit(K_encrypted, K_PRIM)
-        print("Cheia decriptata: {}\n".format(K))
+        print(f"Cheia decriptata: {K}\n")
         return K, K_encrypted
     
     
@@ -42,7 +45,7 @@ def send_encrypted_file_to(sock: socket.socket, mode, K):
             file_size = len(encrypted_message)
 
             sock.sendall(file_size.to_bytes(4, 'big'))
-            print("Mesajul encriptat: {}".format(encrypted_message))
+            print(f"Mesajul encriptat: {encrypted_message}")
             sock.sendall(encrypted_message)
     except FileNotFoundError:
         print("Nu s-a gasit fisierul, incercati din nou.")
@@ -52,20 +55,22 @@ def send_encrypted_file_to(sock: socket.socket, mode, K):
 def connect_with_B(mode, K, K_encrypted):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT_B))
+        
+        # trimite modul de operatie catre nodul B impreuna cu cheia encriptata
         s.sendall(mode.encode())
         s.sendall(K_encrypted)
         
+        # primeste semnalul de start de la nodul B
         start_signal = s.recv(5)
         print(f'Semnalul a fost primit de la B: {start_signal.decode()}\n')
         
+        # trimite fisierul/mesajul encriptat catre nodul B
         send_encrypted_file_to(s, mode, K)
         
 
 if __name__ == "__main__":
     op_mode = input("Ce mod doriti sa folositi: \n1. ECB\n2. OFB\n>> ")
-    if op_mode == "1":
-        op_mode = ECB
-    else: op_mode = OFB
+    op_mode = ECB if op_mode == "1" else OFB
     
     K, K_encrypted = request_from_key_manager(op_mode)
     

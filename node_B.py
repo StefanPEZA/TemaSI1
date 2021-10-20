@@ -19,7 +19,7 @@ def get_encrypted_key(conn: socket.socket):
 
 def get_decrypted_key(K_encrypted):
     K = decrypt_128bit(K_encrypted, K_PRIM)
-    print("Cheia decriptata: {}\n".format(K))
+    print(f"Cheia decriptata: {K}\n")
     return K
     
     
@@ -36,23 +36,27 @@ def decrypt_message_with_mode(mode, message, K):
         mode_class = Mode_ECB(K)
     elif mode == OFB:
         mode_class = Mode_OFB(K, IV)
-    print("Mesajul de decriptat: {}\n".format(message))
+    print(f"Mesajul de decriptat: {message}\n")
     print(f"Modul folosit pentru decriptarea mesajului: {mode_class.ID}\n")
     decrypted_msg = mode_class.decrypt(message)
     return decrypted_msg
 
 
 def handle_connection(conn : socket.socket):
+    # preia modul de operatie de la nodul A
     mode = get_mode_of_operation(conn)
     
+    # preia cheia encriptatea de la nodul A
     K_encrypted = get_encrypted_key(conn)
-    K = get_decrypted_key(K_encrypted)
+    K = get_decrypted_key(K_encrypted) 
     
+    #trimite semnalul de start nodului A
     conn.sendall("START".encode())
     
+    #preia mesajul encriptat de la nodul A si il decripteaza
     message = get_file_message(conn)
     decrypted_msg = decrypt_message_with_mode(mode, message, K)
-    print("Mesajul primit de la A: {}".format(decrypted_msg.decode(errors="ignore")))
+    print("Mesajul primit de la A:\n {}".format(decrypted_msg.decode(errors="ignore")))
     
 
 def start_server():
