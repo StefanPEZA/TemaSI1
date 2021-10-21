@@ -1,1 +1,1 @@
-# TemaSI1
+## Tema laborator - Tema 1 - Securitatea Informatiei
