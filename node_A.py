@@ -75,3 +75,4 @@ if __name__ == "__main__":
     K, K_encrypted = request_from_key_manager(op_mode)
     
     connect_with_B(op_mode, K, K_encrypted)
+    print()

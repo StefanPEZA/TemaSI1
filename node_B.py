@@ -56,7 +56,7 @@ def handle_connection(conn : socket.socket):
     #preia mesajul encriptat de la nodul A si il decripteaza
     message = get_file_message(conn)
     decrypted_msg = decrypt_message_with_mode(mode, message, K)
-    print("Mesajul primit de la A:\n {}".format(decrypted_msg.decode(errors="ignore")))
+    print("Mesajul primit de la A:\n{}".format(decrypted_msg.decode(errors="ignore")))
     
 
 def start_server():
@@ -68,3 +68,4 @@ def start_server():
             
 if __name__ == "__main__":
     start_server()
+    print()

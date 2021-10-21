@@ -10,13 +10,13 @@ def get_random_key():
 
 def encrypt_128bit(text, key):
     # encripteaza un block de 128 biti
-    aes = AES.new(key)
+    aes = AES.new(key, AES.MODE_ECB)
     enc = aes.encrypt(text[:16])
     return enc
     
 def decrypt_128bit(cryptotext, key):
     # decripteaza un block de 128 biti
-    aes = AES.new(key)
+    aes = AES.new(key, AES.MODE_ECB)
     dec = aes.decrypt(cryptotext[:16])
     return dec
 
